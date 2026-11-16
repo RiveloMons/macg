@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMC Donald - Pedidos</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8e8;
+    color: #292929;
+}
+
+header {
+    background: #da1717;
+    color: white;
+    padding: 22px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+header p {
+    margin-bottom: 0;
+}
+
+nav {
+    background: #ffc928;
+    padding: 15px;
+    text-align: center;
+}
+
+nav a {
+    color: #292929;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 15px;
+}
+
+h2 {
+    text-align: center;
+    color: #d71920;
+    margin-top: 35px;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 25px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.producto {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 3px 10px #00000015;
+}
+
+.producto .imagen {
+    font-size: 65px;
+}
+
+.producto h3 {
+    margin-bottom: 8px;
+}
+
+.precio {
+    color: #d71920;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+button {
+    background: #d71920;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #a90f16;
+}
+
+.carrito {
+    background: white;
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px #00000015;
+}
+
+.carrito h2 {
+    margin-top: 0;
+}
+
+.item-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    gap: 10px;
+}
+
+.item-carrito button {
+    padding: 6px 10px;
+}
+
+.total {
+    text-align: right;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.datos input, .datos select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.confirmar {
+    width: 100%;
+    background: #ffc928;
+    color: #222;
+    font-size: 17px;
+}
+
+.confirmar:hover {
+    background: #e9b000;
+}
+
+footer {
+    text-align: center;
+    background: #292929;
+    color: white;
+    padding: 20px;
+    margin-top: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🍔 AMC DONALD</h1>
+    <p>¡El sabor que te hace sonreír!</p>
+</header>
+
+<nav>
+    <a href="#menu">Menú</a>
+    <a href="#carrito">Mi pedido</a>
+</nav>
+
+<h2 id="menu">🍟 Nuestro menú</h2>
+
+<div class="menu" id="productos"></div>
+
+<section class="carrito" id="carrito">
+    <h2>🛒 Tu pedido</h2>
+
+    <div id="lista-carrito">
+        Tu carrito está vacío.
+    </div>
+
+    <div class="total">
+        Total: <span id="total">0.00</span> €
+    </div>
+
+    <h3>📋 Datos del pedido</h3>
+
+    <div class="datos">
+        <input type="text" id="nombre" placeholder="Tu nombre">
+        <input type="text" id="direccion" placeholder="Dirección de entrega">
+
+        <select id="tipo">
+            <option value="Recoger en local">Recoger en el local</option>
+            <option value="A domicilio">Entrega a domicilio</option>
+        </select>
+    </div>
+
+    <button class="confirmar" onclick="confirmarPedido()">
+        CONFIRMAR PEDIDO
+    </button>
+</section>
+
+<footer>
+    <p>© 2026 AMC Donald - Todos los derechos reservados</p>
+    <p>¡Gracias por elegirnos! ❤️</p>
+</footer>
+
+<script>
+
+const productos = [
+    {nombre: "Big Burger", precio: 5.50, emoji: "🍔"},
+    {nombre: "Doble Burger", precio: 7.50, emoji: "🍔"},
+    {nombre: "Hamburguesa de pollo", precio: 6.00, emoji: "🍗"},
+    {nombre: "Nuggets (6 unidades)", precio: 4.00, emoji: "🍗"},
+    {nombre: "Patatas fritas", precio: 2.50, emoji: "🍟"},
+    {nombre: "Patatas grandes", precio: 3.50, emoji: "🍟"},
+    {nombre: "Refresco", precio: 2.00, emoji: "🥤"},
+    {nombre: "Helado", precio: 2.50, emoji: "🍦"}
+];
+
+let carrito = [];
+
+function mostrarProductos() {
+    const contenedor = document.getElementById("productos");
+
+    productos.forEach((producto, index) => {
+        contenedor.innerHTML += `
+            <div class="producto">
+                <div class="imagen">${producto.emoji}</div>
+                <h3>${producto.nombre}</h3>
+                <p class="precio">${producto.precio.toFixed(2)} €</p>
+                <button onclick="agregar(${index})">
+                    Añadir al pedido
+                </button>
+            </div>
+        `;
+    });
+}
+
+function agregar(index) {
+    const producto = productos[index];
+    const encontrado = carrito.find(p => p.nombre === producto.nombre);
+
+    if (encontrado) {
+        encontrado.cantidad++;
+    } else {
+        carrito.push({...producto, cantidad: 1});
+    }
+
+    actualizarCarrito();
+}
+
+function eliminar(index) {
+    carrito[index].cantidad--;
+
+    if (carrito[index].cantidad <= 0) {
+        carrito.splice(index, 1);
+    }
+
+    actualizarCarrito();
+}
+
+function actualizarCarrito() {
+    const lista = document.getElementById("lista-carrito");
+    const totalElemento = document.getElementById("total");
+
+    lista.innerHTML = "";
+
+    if (carrito.length === 0) {
+        lista.innerHTML = "Tu carrito está vacío.";
+    }
+
+    let total = 0;
+
+    carrito.forEach((producto, index) => {
+        let subtotal = producto.precio * producto.cantidad;
+        total += subtotal;
+
+        lista.innerHTML += `
+            <div class="item-carrito">
+                <span>
+                    ${producto.emoji} ${producto.nombre}
+                    x ${producto.cantidad}
+                </span>
+                <span>${subtotal.toFixed(2)} €</span>
+                <button onclick="eliminar(${index})">−</button>
+            </div>
+        `;
+    });
+
+    totalElemento.textContent = total.toFixed(2);
+}
+
+function confirmarPedido() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const direccion = document.getElementById("direccion").value.trim();
+    const tipo = document.getElementById("tipo").value;
+
+    if (carrito.length === 0) {
+        alert("Añade algún producto a tu pedido.");
+        return;
+    }
+
+    if (!nombre) {
+        alert("Escribe tu nombre.");
+        return;
+    }
+
+    if (tipo === "A domicilio" && !direccion) {
+        alert("Escribe tu dirección de entrega.");
+        return;
+    }
+
+    const total = carrito.reduce(
+        (suma, p) => suma + p.precio * p.cantidad, 0
+    );
+
+    const resumen = carrito.map(p =>
+        `${p.nombre} x${p.cantidad}`
+    ).join("\n");
+
+    alert(
+        "¡PEDIDO REALIZADO!\n\n" +
+        "Cliente: " + nombre + "\n" +
+        "Tipo: " + tipo + "\n" +
+        "Productos:\n" + resumen + "\n\n" +
+        "Total: " + total.toFixed(2) + " €\n\n" +
+        "¡Gracias por comprar en AMC Donald!"
+    );
+
+    carrito = [];
+    actualizarCarrito();
+}
+
+mostrarProductos();
+
+</script>
+
+</body>
+</html>
